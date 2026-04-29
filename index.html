@@ -65,7 +65,13 @@
             
             table { width: 100%; border-collapse: collapse; margin-top: 20px; table-layout: fixed; }
             th,td { border: 0.2em solid #000; text-align: left;  }
-            
+            th {
+                padding:0.8em !important;
+                color:white;
+                background-color: #5AAFBA !important; /* Your desired color */
+                -webkit-print-color-adjust: exact;    /* For Chrome, Safari, Edge */
+                print-color-adjust: exact;            /* Standard property */
+            }
             /* Columna de sello: tamaño específico para el tampón */
             .col-sello { width: 180px; height: 120px; text-align: center; font-size: 0.7em; color: #666; }
             
