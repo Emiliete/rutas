@@ -188,7 +188,7 @@ var bounds = [[39.10, -0.85], [39.85, -0.09]];
                     popupAnchor: [0, 0]
                 });
 
-                markerOptions = (i != 1) ? { icon: customIcon } : {}
+                markerOptions = (wp.latLng.equals(L.latLng(39.485209, -0.393131))) ? { icon: customIcon } : {}
                 // Apply the icon here --------------------------v
                 var marker = L.marker(wp.latLng, markerOptions)
                     marker.bindPopup('<div class="popup">' + name.split(',')[0] + '</div>' +
