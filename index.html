@@ -23,6 +23,7 @@ var bounds = [[39.10, -0.85], [39.85, -0.09]];
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         body { margin: 0; font-family: 'Segoe UI', sans-serif; }
@@ -73,7 +74,7 @@ var bounds = [[39.10, -0.85], [39.85, -0.09]];
         input checkbox { margin: 0; padding: 0; box-sizing: border-box; }
         h1 {  padding-top: 1.2em;  width: 60%; margin: 0 auto 0.7em; font-size: 1.5em; line-height: 1.3; text-align: center; color: #9398ac; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);}
         section {  margin: 0 auto;  padding: 0 0;  width: 100px;}
-        label.checkbox { cursor:pointer; display: inline-block;  width: 75px;  padding: 3px 4px;  font-family: sans-serif;  overflow: hidden;  border-radius: 5px;  text-transform: uppercase;  font-size: 13px;  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);  background-color: #181d32;  color: white;}
+        label.checkbox {  display: inline-block;  width: 75px;  padding: 3px 4px;  font-family: sans-serif;  overflow: hidden;  border-radius: 5px;  text-transform: uppercase;  font-size: 13px;  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);  background-color: #181d32;  color: white;}
         label.checkbox input[type="checkbox"] {  display: none;}
         label.checkbox .checkbox-switch {  display: block;}
         .checkbox-switch-trigger {  display: block;  position: relative;  left: 0;  width: 20px;  height: 16px;  background-color: #515a81;  border-radius: 2px;  transition: left 150ms;}
@@ -170,7 +171,7 @@ var bounds = [[39.10, -0.85], [39.85, -0.09]];
         router: L.Routing.osrmv1({ 
             serviceUrl: servidor_en_ejecucion,
             useHints: false,
-            // timeout: 10000 // 10 segundos de margen
+            timeout: 1000 // 1 segundos de margen
         }),
         
         fitSelectedRoutes: true,
@@ -188,7 +189,7 @@ var bounds = [[39.10, -0.85], [39.85, -0.09]];
                     popupAnchor: [0, 0]
                 });
 
-                markerOptions = (wp.latLng.equals(L.latLng(39.485209, -0.393131))) ? { icon: customIcon } : {}
+                markerOptions = (wp.latLng.equals(L.latLng(39.485209,  -0.393131))) ? { icon: customIcon } : {}
                 // Apply the icon here --------------------------v
                 var marker = L.marker(wp.latLng, markerOptions)
                     marker.bindPopup('<div class="popup">' + name.split(',')[0] + '</div>' +
@@ -414,7 +415,32 @@ var bounds = [[39.10, -0.85], [39.85, -0.09]];
         routeData.locations = rutaOptimizada;
         routeData.names = nombresOptimizado;
 
-        routingControl.setWaypoints(routeData.locations);
+
+        ////////////////////////////////////////////////////////////    
+        let timerInterval;
+        Swal.fire({
+        html: "<h3>Evitamos sobrecarga en el servidor</h3><hr><b></b>",
+        timer: 1000,
+        timerProgressBar: true,
+        allowOutsideClick:false,
+        didOpen: () => {
+            Swal.showLoading();
+            const timer = Swal.getPopup().querySelector("b");
+            timerInterval = setInterval(() => {
+            timer.textContent = `${Swal.getTimerLeft()}`;
+            }, 100);
+        },
+        willClose: () => {
+            clearInterval(timerInterval);
+        }
+        }).then((result) => {
+            /* Read more about handling dismissals below */
+            if (result.dismiss === Swal.DismissReason.timer) {
+                // console.log("I was closed by the timer");
+                routingControl.setWaypoints(routeData.locations);  
+            }
+        });
+        /////////////////////////////////////////////////////////////        
     }
 
     function draw(canvas , ancho, alto){
