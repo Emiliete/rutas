@@ -84,57 +84,41 @@ var server_timer= 1000; // miliseconds
         .checkbox-switch-trigger::before {  content: "vuelta";  right: 178%;}
         .checkbox-switch-trigger::after {  content: "ida";  left: 100%;}
 
-    .loader_wrapper{
-        display: flex;width:100%;justify-content: center;align-items: center;color:white
-    }
-        .loader {
-            background:white;
-  position: relative;
-  width: 100%;
-  height: 120px;
-}
-
-/* Subtle rotating arc */
-.arc {
-  position: absolute;
-    width: 24%;
-    height: 90%;
+    
+    .loader {display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    position: relative;
+    height:15vh ;
+border:5px solid;}
+    .arc {
+   width: 6vw;
+    height: 6vw;
     border-radius: 50%;
     border: 6px solid black;
-    border-top: 6px solid #0f8b8d;
-    border-right: 6px solid #e9c8a2;
+    border-top: 6px solid #547c84;/*#0f8b8d*/
+    border-right: 6px solid #547c84;/*#e9c8a2*/
     opacity: 0.6;
     animation: rotate 2.8s linear infinite;
     z-index: 10;
-    left: 4.55em;
-    top: -0.05em;
-}
+    margin-left: -11vw;}
+    .logo { position: absolute; top: 50%; left: 50%; width: 20.5vw; transform: translate(-50%, -50%); animation:  breathe 2.4s ease-in-out infinite; }
 
-/* Logo */
-.logo {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 70%;
-  transform: translate(-50%, -50%);
-  animation: 
-             breathe 2.4s ease-in-out infinite;
-}
+    /* Animations */
+    @keyframes rotate {
+    100% { transform: rotate(360deg); }
+    }
 
-/* Animations */
-@keyframes rotate {
-  100% { transform: rotate(360deg); }
-}
+    @keyframes float {
+    0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+    50% { transform: translate(-50%, -50%) translateY(-6px); }
+    }
 
-@keyframes float {
-  0%, 100% { transform: translate(-50%, -50%) translateY(0); }
-  50% { transform: translate(-50%, -50%) translateY(-6px); }
-}
-
-@keyframes breathe {
-  0%, 100% { filter: drop-shadow(0 0 0px rgba(15,139,141,0.2)); }
-  50% { filter: drop-shadow(0 0 12px rgba(15,139,141,0.5)); }
-}
+    @keyframes breathe {
+    0%, 100% { filter: drop-shadow(0 0 0px rgba(15,139,141,0.2)); }
+    50% { filter: drop-shadow(0 0 12px rgba(15,139,141,0.5)); }
+    }
     </style>
 </head>
 <body>
@@ -472,20 +456,20 @@ var server_timer= 1000; // miliseconds
         ////////////////////////////////////////////////////////////    
         let timerInterval;
         Swal.fire({
-        html: "<div class='loader_wrapper'><div style='height:2vh'></div><div class='loader'><div class='arc'></div><img src='https://portal.edu.gva.es/46022257/wp-content/uploads/sites/831/2026/03/logo_IES_Conselleria.webp' class='logo' /></div></div><hr><b style='color:white'></b>",
+        html: "<div class='loader'><div class='arc'></div><img src='https://portal.edu.gva.es/46022257/wp-content/uploads/sites/831/2026/03/logo_IES_Conselleria.webp' class='logo' /></div></div><br><hr>",
         timer: server_timer,
         timerProgressBar: false,
         allowOutsideClick:false, 
         allowEscapeKey: false,
         background:'transparent',
         showConfirmButton: false,
-        didOpen: () => {
-            // Swal.showLoading();
-            const timer = Swal.getPopup().querySelector("b");
-            timerInterval = setInterval(() => {
-            timer.textContent = `${Swal.getTimerLeft()}`;
-            }, 100);
-        },
+        // didOpen: () => {
+        //     // Swal.showLoading();
+        //     const timer = Swal.getPopup().querySelector("b");
+        //     timerInterval = setInterval(() => {
+        //     timer.textContent = `${Swal.getTimerLeft()}`;
+        //     }, 100);
+        // },
         willClose: () => {
             clearInterval(timerInterval);
         }
