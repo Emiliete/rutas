@@ -8,8 +8,38 @@ var precio_km = 0.75;
 // Límites del callejero (representado dentro de la información de la interfaz)
 // [south, west], [north, east]
 var bounds = [[39.10, -0.85], [39.85, -0.09]];
-var server_timer= 2000; // miliseconds
+var server_timer= 1000; // miliseconds
 ////////////////////////////////
+// --- INTERCEPTOR GLOBAL DE PETICIONES ---
+const originalFetch = window.fetch;
+window.fetch = function() {
+    return originalFetch.apply(this, arguments)
+    .then(async (response) => {
+        if (response.status === 429) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Demasiadas peticiones',
+                text: 'La API de mapas te ha bloqueado temporalmente por exceso de uso (Error 429).',
+                confirmButtonColor: '#547c84'
+            });
+        }
+        return response;
+    })
+    .catch(error => {
+        // Aquí capturamos específicamente el "Failed to fetch" de tus capturas
+        if (!Swal.isVisible()) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Bloqueo de Seguridad (CORS)',
+                text: 'El navegador ha bloqueado la conexión. No puedes abrir el archivo directamente; debes usar un servidor local como Live Server.',
+                confirmButtonColor: '#547c84'
+            });
+        }
+        throw error;
+    });
+};
+
+//////////////////////////////////////////
 </script>
 <!DOCTYPE html>
 <html lang="es">
@@ -134,7 +164,7 @@ border:5px solid;}
         <div  style="position:absolute;top:1.2em;right:18em;z-index:1000;" >
             <section>
             <label class="checkbox">
-                <input id="vuelta" onchange="optimizarRuta()" type="checkbox" id="checktest">
+                <input id="vuelta" onchange="optimizarRutaDelay()" type="checkbox" id="checktest">
                 <span class="checkbox-switch-trigger" style="background: #547c84"></span>
             </label>
         </section>
@@ -393,6 +423,37 @@ border:5px solid;}
         }
     }
 
+    function optimizarRutaDelay(){
+        
+        ////////////////////////////////////////////////////////////    
+        let timerInterval;
+        Swal.fire({
+        html: "<div class='loader'><div class='arc'></div><img src='https://portal.edu.gva.es/46022257/wp-content/uploads/sites/831/2026/03/logo_IES_Conselleria.webp' class='logo' /></div></div><br><hr>",
+        timer: server_timer,
+        timerProgressBar: false,
+        allowOutsideClick:false, 
+        allowEscapeKey: false,
+        background:'transparent',
+        showConfirmButton: false,
+        // didOpen: () => {
+        //     // Swal.showLoading();
+        //     const timer = Swal.getPopup().querySelector("b");
+        //     timerInterval = setInterval(() => {
+        //     timer.textContent = `${Swal.getTimerLeft()}`;
+        //     }, 100);
+        // },
+        willClose: () => {
+            clearInterval(timerInterval);
+        }
+        }).then((result) => {
+            /* Read more about handling dismissals below */
+            if (result.dismiss === Swal.DismissReason.timer) {
+                // console.log("I was closed by the timer");
+                optimizarRuta()
+            }
+        });
+        /////////////////////////////////////////////////////////////        
+    }
     function optimizarRuta() {
         // if (routeData.locations.length < 2) return;
 
@@ -452,35 +513,8 @@ border:5px solid;}
         routeData.locations = rutaOptimizada;
         routeData.names = nombresOptimizado;
 
+        routingControl.setWaypoints(routeData.locations);  
 
-        ////////////////////////////////////////////////////////////    
-        let timerInterval;
-        Swal.fire({
-        html: "<div class='loader'><div class='arc'></div><img src='https://portal.edu.gva.es/46022257/wp-content/uploads/sites/831/2026/03/logo_IES_Conselleria.webp' class='logo' /></div></div><br><hr>",
-        timer: server_timer,
-        timerProgressBar: false,
-        allowOutsideClick:false, 
-        allowEscapeKey: false,
-        background:'transparent',
-        showConfirmButton: false,
-        // didOpen: () => {
-        //     // Swal.showLoading();
-        //     const timer = Swal.getPopup().querySelector("b");
-        //     timerInterval = setInterval(() => {
-        //     timer.textContent = `${Swal.getTimerLeft()}`;
-        //     }, 100);
-        // },
-        willClose: () => {
-            clearInterval(timerInterval);
-        }
-        }).then((result) => {
-            /* Read more about handling dismissals below */
-            if (result.dismiss === Swal.DismissReason.timer) {
-                // console.log("I was closed by the timer");
-                routingControl.setWaypoints(routeData.locations);  
-            }
-        });
-        /////////////////////////////////////////////////////////////        
     }
 
     function draw(canvas , ancho, alto){
@@ -497,4 +531,5 @@ border:5px solid;}
 
     document.getElementById('precio_km').innerHTML = precio_km
       
+     
 </script>
