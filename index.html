@@ -8,7 +8,7 @@ var precio_km = 0.75;
 // Límites del callejero (representado dentro de la información de la interfaz)
 // [south, west], [north, east]
 var bounds = [[39.10, -0.85], [39.85, -0.09]];
-var server_timer= 1000; // miliseconds
+var server_timer= 2000; // miliseconds
 ////////////////////////////////
 // --- INTERCEPTOR GLOBAL DE PETICIONES ---
 const originalFetch = window.fetch;
@@ -30,8 +30,8 @@ window.fetch = function() {
         if (!Swal.isVisible()) {
             Swal.fire({
                 icon: 'error',
-                title: 'Bloqueo de Seguridad (CORS)',
-                text: 'El navegador ha bloqueado la conexión. No puedes abrir el archivo directamente; debes usar un servidor local como Live Server.',
+                title: 'Bloqueo de Seguridad',
+                html: 'Demasiadas peticiones.<br>Inténtalo dentro de unos minutos.',
                 confirmButtonColor: '#547c84'
             });
         }
@@ -297,7 +297,7 @@ border:5px solid;}
             // 3. Si no existe, lo añadimos
             routeData.locations.push(nuevaUbicacion);
             routeData.names.push(e.geocode.name);
-            optimizarRuta();
+            optimizarRutaDelay();
         }
         document.querySelector('.leaflet-control-geocoder-form input').select();
     }).addTo(map);
@@ -394,7 +394,7 @@ border:5px solid;}
             // console.log('no encontrado')
         }    
         
-        optimizarRuta()
+        optimizarRutaDelay()
         //routingControl.setWaypoints(routeData.locations);
         document.querySelector('.leaflet-control-geocoder-form input').select()
     }
