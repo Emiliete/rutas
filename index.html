@@ -8,7 +8,7 @@ var precio_km = 0.75;
 // Límites del callejero (representado dentro de la información de la interfaz)
 // [south, west], [north, east]
 var bounds = [[39.10, -0.85], [39.85, -0.09]];
-var server_timer= 2000; // miliseconds
+var server_timer= 5000; // miliseconds
 ////////////////////////////////
 // --- INTERCEPTOR GLOBAL DE PETICIONES ---
 const originalFetch = window.fetch;
@@ -31,7 +31,7 @@ window.fetch = function() {
             Swal.fire({
                 icon: 'error',
                 title: 'Bloqueo de Seguridad',
-                html: 'Demasiadas peticiones.<br>Inténtalo dentro de unos minutos.',
+                html: 'EL navegador ha bloqueado las cabeceras CORS.',
                 confirmButtonColor: '#547c84'
             });
         }
@@ -164,7 +164,7 @@ border:5px solid;}
         <div  style="position:absolute;top:1.2em;right:18em;z-index:1000;" >
             <section>
             <label class="checkbox">
-                <input id="vuelta" onchange="optimizarRutaDelay()" type="checkbox" id="checktest">
+                <input id="vuelta" onchange="optimizarRuta()" type="checkbox" id="checktest">
                 <span class="checkbox-switch-trigger" style="background: #547c84"></span>
             </label>
         </section>
@@ -178,7 +178,7 @@ border:5px solid;}
         </div>
         <div class="information-icon" onclick="toggleinfo()">🛈</div>
         <div id="ui-panel" class="noPrint">
-            <button id ="print" onclick="window.print()">
+            <button id ="print" onclick="optimizarRuta(); routingControl.setWaypoints(routeData.locations); setTimeout(() => { window.print() }, 2500); ">
                 <div class="print-icon">🖨️</div>
                 <div class="print-content">
                     Distancia: <b><span id="distancia">0</span> km</b><br>
@@ -238,7 +238,7 @@ border:5px solid;}
         router: L.Routing.osrmv1({ 
             serviceUrl: servidor_en_ejecucion,
             useHints: false,
-            timeout: 1000 // 1 segundos de margen
+            timeout: 5000 // 1 segundos de margen
         }),
         
         fitSelectedRoutes: true,
@@ -297,7 +297,7 @@ border:5px solid;}
             // 3. Si no existe, lo añadimos
             routeData.locations.push(nuevaUbicacion);
             routeData.names.push(e.geocode.name);
-            optimizarRutaDelay();
+            optimizarRuta();
         }
         document.querySelector('.leaflet-control-geocoder-form input').select();
     }).addTo(map);
@@ -394,7 +394,7 @@ border:5px solid;}
             // console.log('no encontrado')
         }    
         
-        optimizarRutaDelay()
+        optimizarRuta()
         //routingControl.setWaypoints(routeData.locations);
         document.querySelector('.leaflet-control-geocoder-form input').select()
     }
@@ -454,8 +454,12 @@ border:5px solid;}
         });
         /////////////////////////////////////////////////////////////        
     }
+
+    var marcador
     function optimizarRuta() {
         // if (routeData.locations.length < 2) return;
+
+        routeData.locations.forEach((element, i) => { setMarker(element, i)});
 
         // 0. Extraemos la vuelta si está desmarcada y existe, independientemente de la posición (Excluyendo el origen)y extraemos aquí los markadores eliminados
         console.log(routeData.locations)
@@ -513,7 +517,25 @@ border:5px solid;}
         routeData.locations = rutaOptimizada;
         routeData.names = nombresOptimizado;
 
-        routingControl.setWaypoints(routeData.locations);  
+   
+        
+        // map.closePopup();
+        // marcador.openPopup()
+        // routingControl.setWaypoints(routeData.locations);  
+
+    }
+
+    function setMarker(element, i){
+        console.log(element)
+        
+        name = routeData.names[i] || "Parada " + i;
+       
+        if (i != 0){
+            marcador = L.marker([element.lat, element.lng], {}).addTo(map).bindPopup('<div class="popup">' + name.split(',')[0] + '</div>' +
+                        '<button class="delete" onclick="Delete(' + element.lat + ',' + element.lng + ')">Eliminar</button>').openPopup() 
+                        
+        }           
+            
 
     }
 
