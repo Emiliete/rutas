@@ -164,14 +164,14 @@ border:5px solid;}
         <div  style="position:absolute;top:1.2em;right:18em;z-index:1000;" >
             <section>
             <label class="checkbox">
-                <input id="vuelta" onchange="optimizarRuta()" type="checkbox" id="checktest">
+                <input id="vuelta" onchange="optimizarRuta();map.closePopup();" type="checkbox" id="checktest">
                 <span class="checkbox-switch-trigger" style="background: #547c84"></span>
             </label>
         </section>
         </div>
         <div class="iwrapper" style="bottom:0px;left:-3px;"> 
             <canvas id="iprint" width="229" height="78" ></canvas>
-            <div class="info" style="border-left:0px;"> 🛈 <u>Imprime</u> la plantilla con las visitas y el espacio para el sello. <br> ( El Atajo es control + p ) </div>
+            <div class="info" style="border-left:0px;"> 🛈 <u>Imprime</u> la plantilla con las visitas y el espacio para el sello. </div>
         </div>
         <div class="iwrapper" style="bottom:15vh;width:100%;">
         <div class="info_viewbox"> El área naranja representa los &nbsp<u>límites del callejero</u>&nbsp dentro de Valencia </div>
@@ -262,7 +262,7 @@ border:5px solid;}
                     marker.bindPopup('<div class="popup">' + name.split(',')[0] + '</div>' +
                             '<button class="delete" onclick="Delete(' + wp.latLng.lat + ',' + wp.latLng.lng + ')">Eliminar</button>');
 
-                setTimeout(() => marker.openPopup(), 250);
+                //setTimeout(() => marker.openPopup(), 250);
                 return marker;
             }
         }),
@@ -326,6 +326,9 @@ border:5px solid;}
 
     // Actualizar tabla de impresión y cálculos
     routingControl.on('routesfound', function(e) {
+
+        map.closePopup();
+        
         var legs = ['Origen']
         var route = e.routes[0];
         var legDistance = 0;
@@ -372,6 +375,19 @@ border:5px solid;}
     })
     .addTo(map); map.removeLayer(viewbox);// Para ver la viewbox con limitaciones en el callejero
     
+    function deleteMarkerByCoords(lat, lng) {
+        map.eachLayer(function (layer) {
+            // Check if the layer is a marker
+            if (layer instanceof L.Marker) {
+                const pos = layer.getLatLng();
+                // Compare coordinates (using a small epsilon for precision if needed)
+                if (pos.lat === lat && pos.lng === lng) {
+                    map.removeLayer(layer);
+                }
+            }
+        });
+    }
+
     function Delete(lat,lng){
         // console.log('locations',routeData.locations)
         // console.log('latlng', lat + ' - '+lng)
@@ -392,7 +408,8 @@ border:5px solid;}
             routeData.names.splice(index, 1)
         }else {
             // console.log('no encontrado')
-        }    
+        }  
+        deleteMarkerByCoords(lat, lng)  
         
         optimizarRuta()
         //routingControl.setWaypoints(routeData.locations);
@@ -458,6 +475,12 @@ border:5px solid;}
     var marcador
     function optimizarRuta() {
         // if (routeData.locations.length < 2) return;
+
+        map.eachLayer(function (layer) {
+            if (layer instanceof L.Marker) {
+                map.removeLayer(layer);
+            }
+        });
 
         routeData.locations.forEach((element, i) => { setMarker(element, i)});
 
@@ -530,7 +553,7 @@ border:5px solid;}
         
         name = routeData.names[i] || "Parada " + i;
        
-        if (i != 0){
+        if ( (element.lat != 39.485209) &&  ( element.lng != -0.393131 ) ){
             marcador = L.marker([element.lat, element.lng], {}).addTo(map).bindPopup('<div class="popup">' + name.split(',')[0] + '</div>' +
                         '<button class="delete" onclick="Delete(' + element.lat + ',' + element.lng + ')">Eliminar</button>').openPopup() 
                         
