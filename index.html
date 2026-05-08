@@ -178,7 +178,7 @@ border:5px solid;}
         </div>
         <div class="information-icon" onclick="toggleinfo()">🛈</div>
         <div id="ui-panel" class="noPrint">
-            <button id ="print" onclick="optimizarRuta(); routingControl.setWaypoints(routeData.locations); setTimeout(() => { window.print() }, 2500); ">
+            <button id ="print" onclick="optimizarRuta(); routingControl.setWaypoints(routeData.locations); ">
                 <div class="print-icon">🖨️</div>
                 <div class="print-content">
                     Distancia: <b><span id="distancia">0</span> km</b><br>
@@ -369,6 +369,9 @@ border:5px solid;}
                     <td style="padding:0.5em;" class="col-sello">ESPACIO SELLO</td>
                 </tr>`;
         });
+        
+        pregunta_imprimir()
+          
     });
 
     // Create and add the rectangle (polygon) to the map
@@ -392,6 +395,27 @@ border:5px solid;}
         });
     }
 
+    function pregunta_imprimir(){
+        var resultado  =false
+        Swal.fire({
+        title: "¿Quieres ver la ruta o imprimir?",
+        showDenyButton: true,
+        showCancelButton: false,
+        confirmButtonText: "Imprimir directamente",
+        confirmButtonColor: "black",
+        denyButtonText: `Ver la ruta`,
+        denyButtonColor:"#A2D2FF",
+        didClose: () => {
+            console.log("La alerta se ha cerrado por completo");
+            // Aquí va la lógica que quieres ejecutar siempre al cerrar
+            if (resultado) { window.print();resultado = false;}
+        }
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (resultado.isConfirmed) resultado = true
+            else {resultado = false}
+        });
+    }
     function Delete(lat,lng){
         // console.log('locations',routeData.locations)
         // console.log('latlng', lat + ' - '+lng)
@@ -551,5 +575,11 @@ border:5px solid;}
 
     document.getElementById('precio_km').innerHTML = precio_km
       
+
+    document.addEventListener('keydown', (event) => {
+        // console.log(`Key pressed: ${event.key}`);
+        // console.log(`Key code: ${event.code}`);
+        if (event.code == 'ControlLeft' && routeData.locations.length > 1){pregunta_imprimir()}
+    });
      
 </script>
