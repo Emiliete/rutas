@@ -395,8 +395,9 @@ border:5px solid;}
         });
     }
 
+    var resultado  =false
     function pregunta_imprimir(){
-        var resultado  =false
+        
         Swal.fire({
         title: "¿Quieres ver la ruta o imprimir?",
         showDenyButton: true,
@@ -412,7 +413,7 @@ border:5px solid;}
         }
         }).then((result) => {
             /* Read more about isConfirmed, isDenied below */
-            if (resultado.isConfirmed) resultado = true
+            if (result.isConfirmed) resultado = true
             else {resultado = false}
         });
     }
@@ -579,7 +580,7 @@ border:5px solid;}
     document.addEventListener('keydown', (event) => {
         // console.log(`Key pressed: ${event.key}`);
         // console.log(`Key code: ${event.code}`);
-        if (event.code == 'ControlLeft' && routeData.locations.length > 1){pregunta_imprimir()}
+        if (event.code == 'ControlLeft' && routeData.locations.length > 1){optimizarRuta(); routingControl.setWaypoints(routeData.locations);}
     });
      
 </script>
