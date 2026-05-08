@@ -57,7 +57,7 @@ window.fetch = function() {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; overflow: hidden;}
         #map { height: 100vh; width: 100%; }
         /* Panel de Control en Pantalla */
         #ui-panel { position: absolute; bottom: 0px; z-index: 1000; }
@@ -183,7 +183,7 @@ border:5px solid;}
                 <div class="print-content">
                     Distancia: <b><span id="distancia">0</span> km</b><br>
                     <!-- CAMBIAMOS EL PRECIO KM DIRECTAMENTE AQUÍ --> 
-                    Coste (<span id="precio_km">configuración.precio_km</span>€/km): <span id="precio" class="precio-total">0 </span>€
+                    Coste (<span id="precio_km">configuración.precio_km</span>€/km): <span id="precio" class="precio-total">0</span>€
                 </div>
             </button>
         </div>
@@ -399,11 +399,11 @@ border:5px solid;}
     function pregunta_imprimir(){
         
         Swal.fire({
-        title: "¿Quieres ver la ruta o imprimir?",
+        title: "¿Quieres Imprimir o ver la ruta?",
         showDenyButton: true,
         showCancelButton: false,
         confirmButtonText: "Imprimir directamente",
-        confirmButtonColor: "black",
+        confirmButtonColor: "grey",
         denyButtonText: `Ver la ruta`,
         denyButtonColor:"#A2D2FF",
         didClose: () => {
